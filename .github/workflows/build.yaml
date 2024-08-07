@@ -82,6 +82,7 @@ jobs:
           owner: 'definev'
           repository: 'gemboard'
           access-token: ${{ secrets.PAT }}
+      - name: Move to Gemboard directory
         run: |
           cd gemboard
           ls -la
