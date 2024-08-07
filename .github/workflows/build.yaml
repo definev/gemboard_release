@@ -1,0 +1,223 @@
+name: Build
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  # build_ios:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: melos exec --scope="*app*" -- flutter build ios --release --no-codesign
+  #     - run: melos exec --scope="*app*" -- flutter build apk
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: |
+  #           app/gemboard_app/build/ios/iphoneos/Runner.app
+  #           app/gemboard_app/build/app/outputs/apk/release/app-release.apk
+  
+  # build_android:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: melos exec --scope="*app*" -- flutter build apk --split-per-abi
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: app/gemboard_app/build/app/outputs/
+
+  build_web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: master
+      - name: Clone Gemboard repository
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+        with:
+          owner: 'definev'
+          repository: 'gemboard'
+          access-token: ${{ secrets.PAT }}
+        run: |
+          cd gemboard
+          ls -la
+      - name: Melos
+        uses: bluefireteam/melos-action@v3
+        with:
+          run-bootstrap: true
+      - run: melos exec --scope="*app*" -- flutter build web --web-renderer=canvaskit
+      - run: zip -r web.zip app/gemboard_app/build/web
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: web.zip
+  # build_web_wasm:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: melos exec --scope="*app*" -- flutter build web --wasm
+  #     - name: '📦 Package Web (WASM)'
+  #       run: |
+  #         cd ${{github.workspace}}
+  #         zip -r web_wasm.zip app/gemboard_app/build/web
+  #         gh release upload ${{github.event.release.tag_name}} web_wasm.zip
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.TOKEN }}
+  #       shell: bash
+  #     - run: zip -r web_wasm.zip app/gemboard_app/build/web
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: web_wasm.zip
+  # build_windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: melos exec --scope="*app*" -- flutter build windows
+  #       shell: bash
+  #     - run: zip -r windows.zip app/gemboard_app/build/windows
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: windows.zip
+    
+  # build_macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: melos exec --scope="*app*" -- flutter build macos
+  #     - run: zip -r gemboard_macos.zip app/gemboard_app/build/macos/Build/Products/Release/Gemboard.app
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: gemboard_macos.zip
+
+  # build_linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: master
+  #     - name: Clone Gemboard
+  #       uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+  #       with:
+  #         owner: 'definev'
+  #         repository: 'gemboard'
+  #         access-token: ${{ secrets.PAT }}
+  #       run: |
+  #         cd gemboard
+  #         ls -la
+  #     - name: Melos
+  #       uses: bluefireteam/melos-action@v3
+  #       with:
+  #         run-bootstrap: true
+  #     - run: |
+  #         sudo apt-get update -y
+  #         sudo apt-get install -y ninja-build libgtk-3-dev
+  #     - run: melos exec --scope="*app*" -- flutter build linux
+  #     - run: zip -r linux.zip app/gemboard_app/build/linux
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: linux.zip
