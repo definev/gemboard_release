@@ -117,7 +117,7 @@ jobs:
         with:
           run-bootstrap: true
       - run: cd app/gemboard_app && flutter build windows
-      - run: zip -r gemboard_windows.zip app/gemboard_app/build/windows
+      - run: Compress-Archive -Path 'app/gemboard_app/build/windows/*' -DestinationPath 'gemboard_windows.zip' -Recurse
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
