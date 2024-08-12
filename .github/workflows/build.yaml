@@ -30,6 +30,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: web.zip
+      - run: zip -r extensions.zip app/gemboard_app/extensions
+      - name: Release extension
+        uses: softprops/action-gh-release@v2
+        with:
+          files: extensions.zip
+
   build_web_wasm:
     runs-on: ubuntu-latest
     steps:
